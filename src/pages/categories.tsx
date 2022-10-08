@@ -5,6 +5,7 @@ import AddNewSubCategory from "../components/AddNewSubCategory";
 import Layout from "../components/Layout";
 import { trpc } from "../utils/trpc";
 import type { AppRouter } from "../backend/router";
+import { useState } from "react";
 
 const Categories: NextPage = () => {
   const { data: categories } = trpc.category.getAllWithSubCategories.useQuery();
@@ -25,17 +26,38 @@ type AllCategoriesProps = {
 };
 
 const AllCategories = ({ data }: AllCategoriesProps) => {
+  const [selected, setSelected] = useState("");
   return (
-    <div className="rounded-md border border-gray-800 p-4">
-      {data.map((category) => (
-        <>
-          <div>{category.name}</div>
-          {category.SubCategory.map((sub) => (
-            <div className="ml-4">{sub.name}</div>
+    <>
+      <div className="flex space-x-2 rounded-md">
+        {data.map((category) => (
+          <>
+            <div
+              className={`text-md w-fit cursor-pointer rounded-lg  border px-3 py-0.5  ${
+                selected === category.id
+                  ? "bg-blue-500 text-blue-50"
+                  : "bg-blue-100 text-blue-900"
+              }`}
+              onClick={() => setSelected(category.id)}
+            >
+              {category.name}
+            </div>
+          </>
+        ))}
+      </div>
+      <div>
+        <h2 className="mt-8 text-2xl">Accounts</h2>
+        {data
+          .filter((d) => d.id === selected)
+          .map((cat) => (
+            <div>
+              {cat.SubCategory.map((sub) => (
+                <div>{sub.name}</div>
+              ))}
+            </div>
           ))}
-        </>
-      ))}
-    </div>
+      </div>
+    </>
   );
 };
 
