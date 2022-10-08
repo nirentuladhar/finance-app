@@ -9,6 +9,24 @@ generator client {
     previewFeatures = ["referentialIntegrity"]
 }
 
-model Example {
-    id String @id @default(cuid())
+model Category {
+    id          String        @id @default(cuid())
+    name        String        @db.VarChar(200)
+    SubCategory SubCategory[]
+}
+
+model SubCategory {
+    id         String    @id @default(cuid())
+    name       String    @db.VarChar(200)
+    category   Category  @relation(fields: [categoryId], references: [id])
+    categoryId String
+    Balance    Balance[]
+}
+
+model Balance {
+    id            String      @id @default(cuid())
+    date          DateTime
+    amount        Int
+    SubCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
+    subCategoryId String
 }
