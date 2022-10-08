@@ -4,7 +4,7 @@ import { z } from "zod";
 export const categoryRouter = t.router({
   create: t.procedure
     .input(z.object({ name: z.string() }))
-    .query(({ input, ctx }) => {
+    .mutation(({ input, ctx }) => {
       return ctx.prisma.category.create({
         data: {
           name: input.name,

@@ -12,11 +12,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDate, toCurrency } from "../utils";
+import { Dialog, Transition } from "@headlessui/react";
+import { useState, Fragment } from "react";
+import AddNewCategory from "../components/AddNewCategory";
 
 const Home: NextPage = () => {
-  const { data: categories, isLoading } =
-    trpc.category.getAllWithSubCategories.useQuery();
-
+  const { data: categories } = trpc.category.getAllWithSubCategories.useQuery();
   const { data: balances } = trpc.balance.getAll.useQuery();
 
   return (
@@ -29,7 +30,7 @@ const Home: NextPage = () => {
 
       <main className="mx-auto max-w-4xl p-8">
         <h1 className="mb-4 text-3xl font-bold">Categories</h1>
-
+        <AddNewCategory />
         {categories && <Categories data={categories} />}
 
         {balances && <Balances data={balances} />}
