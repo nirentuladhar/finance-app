@@ -14,8 +14,13 @@ const Categories: NextPage = () => {
     <Layout>
       <h1 className="text-4xl font-medium">Categories</h1>
 
-      <AddNewCategory />
-      <AddNewSubCategory />
+      <div className="flex justify-between pb-4 pt-10">
+        <h2 className="text-2xl font-medium">Manage accounts</h2>
+        <div className="flex justify-end space-x-2">
+          <AddNewCategory />
+          <AddNewSubCategory />
+        </div>
+      </div>
       {categories && <AllCategories data={categories} />}
     </Layout>
   );
@@ -29,7 +34,25 @@ const AllCategories = ({ data }: AllCategoriesProps) => {
   const [selected, setSelected] = useState("");
   return (
     <>
-      <div className="flex space-x-2 rounded-md">
+      <ul>
+        {data.map((cat) => (
+          <>
+            <li className="flex justify-between py-1 text-sm">
+              <span>{cat.name}</span>
+              <span>Edit</span>
+            </li>
+            <ul className="pl-4 text-sm">
+              {cat.SubCategory.map((sub) => (
+                <li className="flex justify-between">
+                  <span>{sub.name}</span>
+                  <span>Edit</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        ))}
+      </ul>
+      {/* <div className="flex space-x-2 rounded-md">
         {data.map((category) => (
           <>
             <div
@@ -56,7 +79,7 @@ const AllCategories = ({ data }: AllCategoriesProps) => {
               ))}
             </div>
           ))}
-      </div>
+      </div> */}
     </>
   );
 };

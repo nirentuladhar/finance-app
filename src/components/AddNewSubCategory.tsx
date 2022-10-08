@@ -31,15 +31,13 @@ const AddNewSubCategory = () => {
 
   return (
     <>
-      <div className=" inset-0 mb-8 flex items-center justify-end">
-        <button
-          type="button"
-          onClick={openModal}
-          className="rounded-md bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-        >
-          Add new sub-category
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={openModal}
+        className="rounded-md bg-blue-500 px-4 py-2 text-xs font-medium text-white hover:bg-opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+      >
+        New account
+      </button>
 
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
