@@ -11,7 +11,6 @@ export const categoryRouter = t.router({
         },
       });
     }),
-
   update: t.procedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .query(({ input, ctx }) => {

@@ -3,7 +3,10 @@ import Head from "next/head";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
-  const { data, isLoading } = trpc.example.getAll.useQuery();
+  const { data: categories, isLoading } =
+    trpc.category.getAllWithSubCategories.useQuery();
+
+  const { data: balances } = trpc.balance.getAll.useQuery();
 
   return (
     <>
@@ -13,10 +16,28 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="p-8">hello</main>
-      {data && JSON.stringify(data)}
+      <main className="mx-auto max-w-4xl p-8">
+        <h1 className="mb-4 text-3xl font-bold">Categories</h1>
+        <div className="rounded-md border border-gray-800 p-4">
+          {categories?.map((category) => (
+            <>
+              <div>{category.name}</div>
+              {category.SubCategory.map((sub) => (
+                <div>{sub.name}</div>
+              ))}
+            </>
+          ))}
+        </div>
+        <div className="flex max-w-sm">
+          <code className="break-words">{JSON.stringify(balances)}</code>
+        </div>
+      </main>
     </>
   );
+};
+
+const Categories: React.FC = () => {
+  return <div>hello</div>;
 };
 
 export default Home;
