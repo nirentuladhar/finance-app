@@ -15,6 +15,7 @@ import { formatDate, toCurrency } from "../utils";
 import { Dialog, Transition } from "@headlessui/react";
 import { useState, Fragment } from "react";
 import AddNewCategory from "../components/AddNewCategory";
+import AddNewSubCategory from "../components/AddNewSubCategory";
 
 const Home: NextPage = () => {
   const { data: categories } = trpc.category.getAllWithSubCategories.useQuery();
@@ -31,6 +32,7 @@ const Home: NextPage = () => {
       <main className="mx-auto max-w-4xl p-8">
         <h1 className="mb-4 text-3xl font-bold">Categories</h1>
         <AddNewCategory />
+        <AddNewSubCategory />
         {categories && <Categories data={categories} />}
 
         {balances && <Balances data={balances} />}
@@ -50,7 +52,7 @@ const Categories = ({ data }: CategoriesProps) => {
         <>
           <div>{category.name}</div>
           {category.SubCategory.map((sub) => (
-            <div>{sub.name}</div>
+            <div className="ml-4">{sub.name}</div>
           ))}
         </>
       ))}

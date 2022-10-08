@@ -1,10 +1,10 @@
 import { t } from "../trpc";
 import { z } from "zod";
 
-export const categoryRouter = t.router({
+export const subCategoryRouter = t.router({
   create: t.procedure
     .input(z.object({ name: z.string(), categoryId: z.string() }))
-    .query(({ input, ctx }) => {
+    .mutation(({ input, ctx }) => {
       return ctx.prisma.subCategory.create({
         data: {
           name: input.name,
