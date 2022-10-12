@@ -25,6 +25,11 @@ export const subCategoryRouter = t.router({
         },
       });
     }),
+
+  getAll: t.procedure.query(({ ctx }) => {
+    return ctx.prisma.subCategory.findMany();
+  }),
+
   getAllByCategories: t.procedure
     .input(z.object({ categoryId: z.string() }))
     .query(({ input, ctx }) => {

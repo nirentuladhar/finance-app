@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { formatDate, toCurrency } from "../utils";
 import Layout from "../components/Layout";
+import { useState } from "react";
 
 const Home: NextPage = () => {
   const { data: balances } = trpc.balance.getAll.useQuery();
@@ -18,7 +19,9 @@ const Home: NextPage = () => {
   return (
     <Layout>
       <h1 className="mb-4 text-4xl font-medium">Dashboard</h1>
-
+      <div className="py-24">
+        <AddBalance />
+      </div>
       {balances && <Balances data={balances} />}
     </Layout>
   );
@@ -94,6 +97,93 @@ const Balances = ({ data }: BalancesProps) => {
         </tbody>
       </table>
     </>
+  );
+};
+
+const AddBalance = () => {
+  const { data: categories } = trpc.category.getAllWithSubCategories.useQuery();
+  const { data: subcategories } = trpc.subCategory.getAll.useQuery();
+
+  const [form, setForm] = useState({
+    categoryId: "",
+    subCategoryId: "",
+  });
+
+  if (!categories) return <></>;
+
+  const handleCategoryClick = (category: any) => {
+    setForm((prev) => ({ ...prev, categoryId: category.id }));
+  };
+
+  const handleSubCategoryClick = (sub: any) => {
+    setForm((prev) => ({
+      ...prev,
+      categoryId: sub.categoryId,
+      subCategoryId: sub.id,
+    }));
+  };
+
+  const getSubCategories = () => {
+    if (!subcategories) return [];
+    return subcategories.filter((s) =>
+      form.categoryId ? s.categoryId === form.categoryId : true
+    );
+  };
+
+  return (
+    <>
+      <div className="mb-2 text-sm text-gray-500">Category</div>
+      <div className="flex space-x-2 rounded-md">
+        {categories.map((category) => (
+          <Pill
+            isActive={form.categoryId === category.id}
+            onClick={() => handleCategoryClick(category)}
+            onReset={() => setForm({ subCategoryId: "", categoryId: "" })}
+          >
+            {category.name}
+          </Pill>
+        ))}
+      </div>
+      <div>
+        <h2 className="mt-4 mb-2 text-sm text-gray-500">Accounts</h2>
+        <div className="flex space-x-2 rounded-md">
+          {getSubCategories().map((sub) => (
+            <Pill
+              isActive={form.subCategoryId === sub.id}
+              onClick={() => handleSubCategoryClick(sub)}
+              onReset={() =>
+                setForm((prev) => ({ ...prev, subCategoryId: "" }))
+              }
+            >
+              {sub.name}
+            </Pill>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
+
+type PillProps = {
+  isActive: boolean;
+  onClick: () => void;
+  onReset: () => void;
+  children: string;
+};
+
+const Pill = ({ isActive, onClick, onReset, children }: PillProps) => {
+  const handleClick = () => {
+    isActive ? onReset() : onClick();
+  };
+  return (
+    <div
+      className={`text-md w-fit cursor-pointer rounded-lg px-3 py-0.5  ${
+        isActive ? "bg-blue-500 text-blue-50" : "bg-blue-100 text-blue-900"
+      }`}
+      onClick={handleClick}
+    >
+      {children}
+    </div>
   );
 };
 
