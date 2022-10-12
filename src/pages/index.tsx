@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-table";
 import { formatDate, toCurrency } from "../utils";
 import Layout from "../components/Layout";
-import { useState } from "react";
+import React, { useState } from "react";
 
 const Home: NextPage = () => {
   const { data: balances } = trpc.balance.getAll.useQuery();
@@ -101,10 +101,18 @@ const Balances = ({ data }: BalancesProps) => {
 };
 
 const AddBalance = () => {
+  const utils = trpc.useContext();
   const { data: categories } = trpc.category.getAllWithSubCategories.useQuery();
   const { data: subcategories } = trpc.subCategory.getAll.useQuery();
+  const addBalance = trpc.balance.create.useMutation({
+    onSuccess() {
+      utils.balance.invalidate();
+    },
+  });
 
   const [form, setForm] = useState({
+    date: new Date().toLocaleDateString("en-AU"),
+    amount: 0,
     categoryId: "",
     subCategoryId: "",
   });
@@ -130,19 +138,51 @@ const AddBalance = () => {
     );
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    addBalance.mutate({
+      amount: form.amount,
+      date: new Date(form.date),
+      subCategoryId: form.subCategoryId,
+    });
+  };
+
   return (
-    <>
-      <div className="mb-2 text-sm text-gray-500">Category</div>
-      <div className="flex space-x-2 rounded-md">
-        {categories.map((category) => (
-          <Pill
-            isActive={form.categoryId === category.id}
-            onClick={() => handleCategoryClick(category)}
-            onReset={() => setForm({ subCategoryId: "", categoryId: "" })}
-          >
-            {category.name}
-          </Pill>
-        ))}
+    <form className="space-y-4" onSubmit={handleSubmit}>
+      <div className="flex flex-col">
+        <label htmlFor="date-input" className="mt-4 mb-2 text-sm text-gray-500">
+          Date
+        </label>
+        <input
+          type="date"
+          className="border"
+          value={form.date}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, date: e.target.value }))
+          }
+        ></input>
+      </div>
+      <div>
+        <div className="mb-2 text-sm text-gray-500">Category</div>
+        <div className="flex space-x-2 rounded-md">
+          {categories.map((category) => (
+            <Pill
+              isActive={form.categoryId === category.id}
+              onClick={() => handleCategoryClick(category)}
+              onReset={() =>
+                setForm({
+                  subCategoryId: "",
+                  categoryId: "",
+                  date: "",
+                  amount: 0,
+                })
+              }
+            >
+              {category.name}
+            </Pill>
+          ))}
+        </div>
       </div>
       <div>
         <h2 className="mt-4 mb-2 text-sm text-gray-500">Accounts</h2>
@@ -160,7 +200,25 @@ const AddBalance = () => {
           ))}
         </div>
       </div>
-    </>
+      <div className="flex flex-col">
+        <label htmlFor="amount-input" className="mb-2 text-sm text-gray-500">
+          Amount
+        </label>
+        <input
+          id="amount"
+          type="number"
+          className="border"
+          value={form.amount}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              [e.target.id]: parseInt(e.target.value),
+            }))
+          }
+        />
+      </div>
+      <button type="submit">Add</button>
+    </form>
   );
 };
 
